@@ -11,16 +11,14 @@ SE OPPGAVETEKST I KOMPENDIET. HUSK Å REDIGER TEKSTEN NEDENFOR!
 
 ## Gruppemedlemmer
 
+**TODO: Erstatt med navn på gruppemedlemmene**
+
 * Ola Eksempel
 * Kari Mal
 
-## Kvalitetssikring
+## Sjekkliste
 
-Vi brukte [ navn på verktøy for linting, statisk analyse eller lignende ] for å kvalitetssikre koden. 
-
-[..] foreslo at vi burde ha fikset på [..]. Etter å ha rettet opp i dette ved å [..] fikk vi ingen feilmeldinger.
-
-
-[..] kan installeres på følgende måte / med følgende kommandoer: [..]
-
-For å utføre eksakt samme kvalitetssikring som vi har gjort, gjør følgende / kjør følgende kommandoer: [..]
+* Har navnene på gruppemedlemmene blitt skrevet inn over?
+* Har læringsassistenter og foreleser blitt lagt til med leserettigheter?
+* Er issue-tracker aktivert?
+* Er pipeline aktivert, og returnerer pipelinen "Successful"?
