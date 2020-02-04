@@ -3,6 +3,9 @@
 #include <sys/wait.h> /* waitpid */
 #include <unistd.h> /* fork */
 
+
+myfunc() {printf("yo");}
+
 void process(int number, int time) {
   printf("Prosess %d kjører\n", number);
   sleep(time);
