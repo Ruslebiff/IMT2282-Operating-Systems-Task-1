@@ -7,14 +7,10 @@ Denne oppgaven består av følgende laboppgaver fra kompendiet:
 * 5.6.b (Flere Producere og Consumere)
 * 6.10.a (Dining philosophers)
 
-SE OPPGAVETEKST I KOMPENDIET. HUSK Å REDIGER TEKSTEN NEDENFOR!
+SE OPPGAVETEKST I KOMPENDIET.
 
 ## Gruppemedlemmer
-
-**TODO: Erstatt med navn på gruppemedlemmene**
-
-* Ola Eksempel
-* Kari Mal
+* Joakim Vetle Berg (joakivb@stud.ntnu.no)
 
 ## Sjekkliste
 
