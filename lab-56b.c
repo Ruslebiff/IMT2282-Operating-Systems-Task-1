@@ -9,8 +9,8 @@
 #define MAX_MOD 100000
 #define NUM_ITER 200
 
-void* Producer(); /* Producer thread */
-void* Consumer(); /* Consumer thread */
+void* Producer(int id); /* Producer thread */
+void* Consumer(int id); /* Consumer thread */
 
 sem_t empty;            /* empty: How many empty buffer slots */
 sem_t full;             /* full: How many full buffer slots */
@@ -22,24 +22,54 @@ int g_idx;              /* index to next available slot in buffer,
                            according to C standard, so no init needed  */
 struct threadargs {
   int id;         /* thread number */
-  int sec;        /* how many seconds to sleep */
-  int signal[6];  /* which threads to signal when done */
 };
 
 
-int main(void) {
+int main(int argc, char *argv[]) {
+/*	main(..) parameters:
+    argc (ARGument Count) is int and stores number of command-line arguments passed by the user including the name of the program. So if we pass a value to a program, value of argc would be 2 (one for argument and one for program name)
+    The value of argc should be non negative.
+    argv(ARGument Vector) is array of character pointers listing all the arguments.
+    If argc is greater than zero,the array elements from argv[0] to argv[argc-1] will contain pointers to strings.
+    Argv[0] is the name of the program , After that till argv[argc-1] every element is command -line arguments.
+*/
+
+	// Initialize variables
+	long N = 0; 
+	char* ptr;
+
 	pthread_t pid, cid;
-    int k = 1;
+	//pthread_t *producerThread;
+	//pthread_t *consumerThread;
+    //int k = 1;
 
-  struct threadargs *targs[6];
+	// Check args
+	if (argc < 2) {  // missing arguments
+		printf("Missing argument for number of threads, exiting...\n");
+		return 0;
+	}
+	if (argv[1]) { 
+		N = strtol(argv[1], &ptr, 10); // TODO: test atoi(argc[1]) instead? Then (int)N can be just N
+		if (N < 1) {					// argument is 0, negative or something weird
+			printf("Invalid argument, exiting..\n");
+			return 0;
+		}
+	} 
 
-  /* allocate memory for threadargs and zero out semaphore signals */
-  for(int i=0;i<6;i++) { 
-    targs[i] = (struct threadargs*) malloc(sizeof(struct threadargs));
-    for(int j=0;j<6;j++) { targs[i]->signal[j]=0; }
-  }
+	struct threadargs *producers[N];
+	struct threadargs *consumers[N];
 
- targs[0]->id=k +1;
+	/* allocate memory for threadargs */
+	
+	for(int i=0;i<(int)N;i++) { 
+		producers[i] = (struct threadargs*) malloc(sizeof(struct threadargs));
+		consumers[i] = (struct threadargs*) malloc(sizeof(struct threadargs));
+
+		producers[i]->id = i;
+		consumers[i]->id = i;
+	}
+	//targs[0]->id=k +1; //wtf
+
 
 	// Initialie the semaphores
 	sem_init(&empty, SHARED, BUF_SIZE);
@@ -48,19 +78,26 @@ int main(void) {
 
 	// Create the threads
 	printf("main started\n");
-	pthread_create(&pid, NULL, Producer, NULL);
-	pthread_create(&cid, NULL, Consumer, NULL);
+	printf("Creating %d producers and consumers\n", (int)N);
+	for (int i = 0; i < (int)N; i++) {
+		pthread_create(&pid, NULL, Producer, producers[i]->id);
+		pthread_create(&cid, NULL, Consumer, consumers[i]->id);
+	}
+	
 
 	// And wait for them to finish.
-	pthread_join(pid, NULL);
-	pthread_join(cid, NULL);
+	for (int i = 0; i < (int)N; i++) {
+		pthread_join(pid, NULL);
+		pthread_join(cid, NULL);
+	}
+	
 	printf("main done\n");
 
 	return 0;
 }
 
 
-void *Producer() {
+void *Producer(int id) {
 	int i=0, j;
 
 	while(i < NUM_ITER) {
@@ -84,7 +121,7 @@ void *Producer() {
 		g_idx++;
 		
 		// Print buffer status.
-		j=0; printf("(Producer, idx is %d): ",g_idx);
+		j=0; printf("(Producer %d, idx is %d): ", id, g_idx);
 		while(j < g_idx) { j++; printf("="); } printf("\n");
 		
 		// Leave region with exlusive access
@@ -99,7 +136,7 @@ void *Producer() {
 }
 
 
-void *Consumer() {
+void *Consumer(int id) {
 	int i=0, j;
 
 	while(i < NUM_ITER) {
@@ -123,7 +160,7 @@ void *Consumer() {
 		g_idx--;
 		
 		// Print the current buffer status
-		j=0; printf("(Consumer, idx is %d): ",g_idx);
+		j=0; printf("(Consumer %d, idx is %d): ", id, g_idx);
 		while(j < g_idx) { j++; printf("="); } printf("\n");
 		
 		// Leave region with exclusive access
