@@ -35,20 +35,20 @@ int main(int argc, char *argv[]) {
 */
 
 	// Initialize variables
-	long N = 0; 
+	long N = 1; // minimum 1 producer and consumer
 	char* ptr;
 
 	
 	pthread_t *producerThread;
 	pthread_t *consumerThread;
 
-	// Check args
-	if (argc < 2) {  // missing arguments
-		printf("Missing argument for number of threads, exiting...\n");
-		return 0;
+	// Check args - endre til at hvis man ikke skriver noe argument så bare sett N = 2, da slipper du klager fra clang tidy ser det ut som. 
+	if (argc != 2) {  // missing arguments	
+		printf("TIP: Run program with an integer as parameter to change number of producers and consumers\n");
 	}
+
 	if (argv[1]) { 
-		N = strtol(argv[1], &ptr, 10); // TODO: test atoi(argc[1]) instead? Then (int)N can be just N
+		N = strtol(argv[1], &ptr, 0); // test atoi(argc[1]) instead? Then (int)N can be just N
 		if (N < 1) {					// argument is 0, negative or something weird
 			printf("Invalid argument, exiting..\n");
 			return 0;
@@ -57,6 +57,7 @@ int main(int argc, char *argv[]) {
 
 	struct threadargs *producers[N];
 	struct threadargs *consumers[N];
+
 
 	/* allocate memory for threadargs */
 	
@@ -106,7 +107,8 @@ int main(int argc, char *argv[]) {
 
 
 void *Producer(void *id) {
-	int i=0, j;
+	int i = 0;
+	int j = 0;
 
 	int *producerid;
 	producerid = (int*)id;
@@ -148,7 +150,8 @@ void *Producer(void *id) {
 
 
 void *Consumer(void *id) {
-	int i=0, j;
+	int i = 0;
+	int j = 0;
 	
 	int *consumerid;
 	consumerid = (int*)id;
