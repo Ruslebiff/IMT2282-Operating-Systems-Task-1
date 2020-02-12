@@ -53,11 +53,13 @@ void *phil(void *arg) {
   while(i < NUM_ITER) {
     usleep(random()%(TIME*2)); /* think 2 times longer than eating */
     take_forks((intptr_t)arg);
+    sem_wait(&mutexprint);    // BLOCK
     printf("Filosof %ld spiser:\t",(intptr_t)arg);
     for(j=0;j<N;j++) {
       printf("%s\t",text[state[j]]);
     }
     printf("\n");
+    sem_post(&mutexprint);    // WAKE
     usleep(random()%TIME);      /* eat */
     put_forks((intptr_t)arg);
     i++;    
@@ -66,18 +68,24 @@ void *phil(void *arg) {
 }
 
 void take_forks(int i) {
+  sem_wait(&b);
   state[i]=HUNGRY;
   test(i);
+  sem_post(&b);
+  sem_wait(&phil_s[i]);
 }
 
 void put_forks(int i) {
+  sem_wait(&b);
   state[i]=THINKING;
   test(LEFT);
   test(RIGHT);
+  sem_post(&b);
 }
 
 void test(int i) {
   if(state[i]==HUNGRY && state[LEFT]!=EATING && state[RIGHT]!=EATING) {
+    sem_post(&phil_s[i]);
     state[i]=EATING; 
   }
 }
